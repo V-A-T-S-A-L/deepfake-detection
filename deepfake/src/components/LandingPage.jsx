@@ -1,4 +1,5 @@
-import { useState } from 'react';
+"use client"; // Ensure this runs on the client side
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ShieldCheck, Zap, Eye } from 'lucide-react';
 import { Textarea } from "@/components/ui/textarea";
+import { auth } from "@/firebaseConfig"; // Import Firebase auth
+import { onAuthStateChanged } from "firebase/auth"; // Import Firebase auth state observer
 
 const LandingPage = () => {
   const [currentPage, setCurrentPage] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+
+  // Check if the user is logged in
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true); // User is logged in
+      } else {
+        setIsLoggedIn(false); // User is not logged in
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription
+  }, []);
 
   const navigate = (page) => {
     setCurrentPage(page);
@@ -23,8 +40,13 @@ const LandingPage = () => {
           <div className="space-x-4">
             <button onClick={() => navigate('about')} className="text-foreground hover:text-primary transition-colors">About</button>
             <button onClick={() => navigate('contact')} className="text-foreground hover:text-primary transition-colors">Contact</button>
-            <Button variant="outline">Login</Button>
-            <Button>Sign Up</Button>
+            {/* Conditionally render Login and Sign Up buttons */}
+            {!isLoggedIn && (
+              <>
+                <Button variant="outline">Login</Button>
+                <Button>Sign Up</Button>
+              </>
+            )}
           </div>
         </nav>
       </header>
@@ -79,8 +101,6 @@ const LandingPage = () => {
                 </Card>
               </div>
             </section>
-
-            {/* The rest of your code follows the same structure */}
           </>
         )}
 

@@ -10,9 +10,7 @@ export default function About() {
             DeepFake Detector
           </Link>
           <div className="space-x-4">
-            <Link href="/about" className="text-foreground hover:text-primary transition-colors">
-              About
-            </Link>
+            
             <Link href="/contact" className="text-foreground hover:text-primary transition-colors">
               Contact
             </Link>
@@ -60,11 +58,7 @@ export default function About() {
                     Home
                   </Link>
                 </li>
-                <li>
-                  <Link href="/about" className="hover:text-primary transition-colors">
-                    About
-                  </Link>
-                </li>
+               
                 <li>
                   <Link href="/contact" className="hover:text-primary transition-colors">
                     Contact
