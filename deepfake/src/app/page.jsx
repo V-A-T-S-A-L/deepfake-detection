@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,8 +7,27 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { ShieldCheck, Zap, Eye } from "lucide-react"
+ // Ensure this runs on the client side
+import { useState, useEffect } from "react";
+
+import { auth } from "@/firebaseConfig"; // Import Firebase auth
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Home() {
+  const [user, setUser] = useState(null); // Track logged-in user
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       <video autoPlay loop muted className="absolute top-0 left-0 min-w-full min-h-full object-cover opacity-30 z-0">
@@ -20,22 +40,34 @@ export default function Home() {
             <Link href="/" className="text-2xl font-bold text-primary">
               DeepFake Detector
             </Link>
-            <div className="space-x-4">
+            <div className="flex space-x-4">
               <Link href="/about" className="text-foreground hover:text-primary transition-colors">
                 About
               </Link>
               <Link href="/contact" className="text-foreground hover:text-primary transition-colors">
                 Contact
               </Link>
-              <Link href="/login">
-                <Button variant="outline">Login</Button>
-              </Link>
-              <Link href="/signup">
-                <Button>Sign Up</Button>
-              </Link>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm font-medium">Welcome, {user.displayName || "User"}!</span>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline">Login</Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button>Sign Up</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </header>
+
 
         <main className="container mx-auto mt-12 px-4">
           <section className="text-center mb-16 animate-fade-in">
